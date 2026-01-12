@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="uk">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Каталог</title>
+<style>
+  
+:root{
+  --g:#21a35a;
+  --b:#0b0f14;
+  --m:#6b7280;
+  --bg:#fff
+}
+*{
+  box-sizing:border-box
+}
+body{
+  margin:0;
+  font:14px/1.25 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--b);background:var(--bg)
+}
+.w{
+  width:360px;
+  min-height:600px;
+  margin:0 auto;
+  padding:10px 10px 14px
+}
+.top{
+  display:flex;
+  gap:8px;
+  align-items:center
+}
+.btn{
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:12px;
+  color:#111;
+  background:#fff;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;white-space:nowrap
+}
+.search{
+  flex:1;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:12px
+}
+
+/* Бургер-меню категорій */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.25);
+  display:none;
+  z-index:1000;
+}
+.overlay.on{display:block}
+.drawer{
+  position:fixed;
+  top:0;left:0;
+  height:100%;
+  width:260px;
+  background:#fff;
+  border-right:1px solid #e5e7eb;
+  transform:translateX(-105%);
+  transition:transform .18s ease;
+  z-index:1001;
+  padding:12px;
+}
+.drawer.on{transform:translateX(0)}
+.drawerHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+.drawerTitle{font-size:13px;font-weight:700}
+.xbtn{
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  padding:6px 9px;
+  background:#fff;
+  font-size:12px;
+  cursor:pointer;
+}
+.catList{display:flex;flex-direction:column;gap:6px}
+.cat{
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:10px 10px;
+  background:#fff;
+  text-align:left;
+  font:inherit;
+  cursor:pointer;
+}
+.cat.active{border-color:var(--g);color:var(--g);font-weight:600}
+.hint{font-size:11px;color:var(--m);margin-top:8px;line-height:1.25}
+.tabs{
+  display:flex;
+  gap:16px;
+  margin:10px 0 6px;
+  font-size:12px
+}
+.tabs a{
+  color:#111;
+  text-decoration:none;
+  padding:6px 0;
+  border-bottom:2px solid transparent
+}
+.tabs a.active{
+  color:var(--g);
+  border-bottom-color:var(--g);
+  font-weight:600
+}
+.h{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin:8px 0 8px
+}
+.h b{
+  font-size:12px
+}
+.more{
+  font-size:11px;
+  color:var(--g);
+  text-decoration:none
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px
+}
+
+/* Горизонтальна стрічка товарів (свайп ліво/право) */
+.row{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding-bottom:6px;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+}
+.row::-webkit-scrollbar{height:6px}
+.row::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:999px}
+.row::-webkit-scrollbar-track{background:transparent}
+.row .card{
+  flex:0 0 112px;          /* щоб було що листати */
+  scroll-snap-align:start;
+}
+
+.card{
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:6px
+}
+.ph{
+  height:72px;            /* ⬅️ менша висота картки */
+  border-radius:12px;
+  background:#f3f4f6
+}
+.ph img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  border-radius:12px
+}
+/* Текст + рейтинг (як у макеті) */
+.meta{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin:6px 0 0
+}
+.title{
+  font-size:12px;
+  line-height:1.15;
+  color:#111;
+  max-height:2.4em;
+  overflow:hidden
+}
+.rate{
+  font-size:12px;
+  font-weight:600;
+  white-space:nowrap;
+  color:#111
+}
+.price{
+  margin:4px 0 0;
+  font-size:12px;
+  font-weight:700;
+  color:var(--g)
+}
+.block{
+  margin:10px 0;
+  border-radius:14px;
+  height:120px;        /* ⬅️ менша висота банера */
+  background:#f3f4f6;
+  border:1px solid #e5e7eb;
+  overflow:hidden;     /* ⬅️ ГОЛОВНЕ */
+}
+
+.block img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;    /* ⬅️ красиво обрізає */
+}
+
+/* Банер як у макеті (текст поверх картинки) */
+.banner{position:relative;width:100%;height:100%}
+.bannerBar{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  display:flex;
+  gap:10px;
+  padding:8px;
+  color:#fff;
+  background:linear-gradient(to top, rgba(0,0,0,.60), rgba(0,0,0,0));
+  font-size:10px
+}
+.bannerLeft{flex:1;max-width:140px;line-height:1.1;opacity:.95}
+.bannerMid{flex:2;line-height:1.1;font-weight:600}
+.bannerSub{display:block;font-weight:400;opacity:.9;margin-top:2px}
+.bannerArrow{font-size:22px;line-height:1;opacity:.95}
+
+.center{
+  display:flex;
+  justify-content:center;
+  margin:12px 0
+}
+.cta{
+  border:1px solid var(--g);
+  color:var(--g);
+  border-radius:999px;
+  padding:10px 14px;
+  font-size:12px;
+  text-decoration:none
+}
+.foot{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid #e5e7eb;
+  font-size:10px;
+  color:var(--m)
+}
+.foot a{
+  color:var(--m);
+  text-decoration:none
+  }
+</style>
+<main class="w">
+  <div class="top">
+    <button class="btn" id="catBtn" type="button" aria-label="Відкрити категорії">☰ Категорії</button>
+    <input class="search" id="searchInput" placeholder="Пошук..." aria-label="Пошук">
+    <a class="btn" href="#cart">🛒</a>
+  </div>
+
+  <!-- Категорії (бургер-меню) -->
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+  <aside class="drawer" id="drawer" aria-label="Категорії" aria-hidden="true">
+    <div class="drawerHead">
+      <div class="drawerTitle">Категорії</div>
+      <button class="xbtn" id="closeDrawer" type="button" aria-label="Закрити">✕</button>
+    </div>
+    <div class="catList" role="list">
+      <button class="cat active" type="button" data-cat="all">Всі</button>
+      <button class="cat" type="button" data-cat="pans">Сковородки</button>
+      <button class="cat" type="button" data-cat="pots">Каструлі</button>
+      <button class="cat" type="button" data-cat="knives">Ножі</button>
+      <button class="cat" type="button" data-cat="accessories">Аксесуари</button>
+    </div>
+    <div class="hint">Вибери категорію — і список товарів автоматично відфільтрується.</div>
+  </aside>
+
+  <nav class="tabs" aria-label="Навігація">
+    <a class="active" href="#new">Нове</a>
+    <a href="#popular">Популярне</a>
+    <a href="#all">Все</a>
+  </nav>
+
+  <section id="new">
+    <div class="h"><b>ТОП</b><a class="more" href="more.html">Всього →</a></div>
+    <div class="row" aria-label="ТОП товари">
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковорода" loading="lazy" src="img/products/pan_1.jpg"></div>
+        <div class="meta">
+          <div class="title">Сковорода з кришкою<br>червона</div>
+          <div class="rate">★ 4.6</div>
+        </div>
+        <div class="price">1890 грн</div>
+      </article>
+
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковорода" loading="lazy" src="img/products/pan_2.jpg"></div>
+        <div class="meta">
+          <div class="title">Сковорода нерж. сталь<br>з кришкою</div>
+          <div class="rate">★ 4.5</div>
+        </div>
+        <div class="price">2190 грн</div>
+      </article>
+
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковорода" loading="lazy" src="img/products/pan_3.jpg"></div>
+        <div class="meta">
+          <div class="title">Сковорода з кришкою<br>антипригарна</div>
+          <div class="rate">★ 4.4</div>
+        </div>
+        <div class="price">1650 грн</div>
+      </article>
+
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковорода" loading="lazy" src="img/products/pan_4.jpg"></div>
+        <div class="meta">
+          <div class="title">Вок-сковорода<br>з кришкою</div>
+          <div class="rate">★ 4.7</div>
+        </div>
+        <div class="price">2490 грн</div>
+      </article>
+
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковорода" loading="lazy" src="img/products/pan_5.jpg"></div>
+        <div class="meta">
+          <div class="title">Сковорода жовта<br>з кришкою</div>
+          <div class="rate">★ 4.3</div>
+        </div>
+        <div class="price">1790 грн</div>
+      </article>
+
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковорода" loading="lazy" src="img/products/pan_6.jpg"></div>
+        <div class="meta">
+          <div class="title">Набір 2 сковороди<br>+ 2 кришки</div>
+          <div class="rate">★ 4.6</div>
+        </div>
+        <div class="price">2990 грн</div>
+      </article>
+
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковорода" loading="lazy" src="img/products/pan_7.jpg"></div>
+        <div class="meta">
+          <div class="title">Сковорода глибока<br>бордова</div>
+          <div class="rate">★ 4.5</div>
+        </div>
+        <div class="price">2050 грн</div>
+      </article>
+    </div>
+<div class="meta">
+          <div class="title">Сковородка тефлонова<br>з кришкою</div>
+          <div class="rate">★ 3.5</div>
+        </div>
+        <div class="price">2400 грн</div>
+      </article>
+
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковородка" src="data:image/webp;base64,UklGRqIEAABXRUJQVlA4IJYEAACwGgCdASp4AFoAPwFurk+rJqQiK1S+KWAgCUAZ0rv5FNwJz/6ndFR/FuVPuj8w+ozK30f98jjrE7XSCOk4in78XZnNfdmNju7fIrEuur2x5l5c9fCl4rSEsSkGESvS6Jg6Zr4EjlD9WKynlvtm40WDvz2cJVrrCItw6kiogisSa8lz+Mv2o2tRfSIdjh/zN29yWexvj04XfC11Gt4KpbrZ10FvikqH/4T+KJ/zH/2p2PfpwltRt4hMP9f/1n/ClyVjF7oXQqvbqx1GV6mIv5UhSfBe+arE8rYzd4DatwAA/vfirzRT7u/vM5LGGHfRShlJ23E67pS9ZgXcwLAfvzTqxoRmkOC59k+y+7eGGT1t18r6sX7WY/r/Yoop04ob4ReLrku20EUKYwiBuh6KsQAh/4WQR+k78sc5lUNKb1v8sKOwHncBW/xODiaXF1LUucuTcCqWmsMVL7DlanblBjb6SbCV5X4vRnvTzdE7oKPmUceZaokMfAUsolrfaBYtOgu4+itdyBGXGt37h/U7ledWH+IqYEFFLFV9mYTGbK/FzMmsEYnJkgvqZzux3RlCxCUiNLzhWkkeyVV2Jd89h4+KmUCGyTh9UKiriucbNmK9gPwanRG5AaB/otS9N13z8KnsnATSRWanxdi3/5vtP3eqX8usRQy+ZDwycCNVk0CGcBd9I7BbDDkOEGTBWzDeHgzQXy0FB/IVbRsFGKp/b4DletSq4a03vzdYPiIVN6pz5dDSQfO4Jj8IIlAeCc6+F1W447GktfjoAqeLzKDOaqgm+OfcZCs63N/oR9QMfJjIY0wLqN44E/gwR9i07DMf/sD11JXi1OqYXy075md2ki3IXJE/zqeXrXwMGxG1SRYVeT8frMg2ncWEdgSMRzq67NScL+NAb9aNByByRNCDUheOvHQiQTHpoyB4anWcHo46/7QzvsQRxiqwfQDZjnHm6PvFIRwymO9/idk+fkmCxh6MyuRWElZZYxwA+cWWQz9hPjNYN6b2IKkvGqp9xEIRSqr9rvK6R2sD0krtdFjASndxWdWV2dTlFRVaaA72ArU7eIpt4+Gk9HNb4+Xd4OdD3KNTlQvqUYP3CrWBvwGaGXCLEEENk1CLf36u+pncsfGLOTPxsSaILUmbG7xSn181b7T97oqu880Ht/IaF8BhfJEf2TxTtogocGV5v0v7os3AvBz/h8ufmXRCVRJKwbnfu4cUtl6YAG87PC0pBevSrP6CMU+rzn2uTFRtWI2uxAOz6z75CzbzytXYaEv4PCO+ZO/ZSQ388nlEqzd1W+vmptZRDKX/cS7CyESPgLqrYsrHS1lH0FBtTJkZ02vTtKDvDHQXmsE1UK9PT81T5ebH4ClVt37pWmpeTZV4s7dNxsWClOvBe+Jz65TZidiF43x0jO1h+Lu7cz5XOVldrGUr+FaVd4HNEshb0OksByrnNu0p4qFq6ddC/PDWwOHvOGFKKa3Xi9pRW5rXh0HtuEZ4/XYFNGSQRupsOOnakwkW63pHB5DRAMuHPMT/Tvlqs/73IMKNrpIvnqPnXKGYDJHkZHKxV47KAAAA"></div>
+        <div class="meta">
+          <div class="title">Сковородка тефлонова<br>з кришкою</div>
+          <div class="rate">★ 3.5</div>
+        </div>
+        <div class="price">2400 грн</div>
+      </article>
+
+      <article class="card" data-cat="pans">
+        <div class="ph"><img alt="Сковородка" src="data:image/webp;base64,UklGRoQCAABXRUJQVlA4IHgCAAAwFACdASp4AFoAPwFytFCrJyUiqrILwWAgCWkACxEb32cT/RsMxC2VsIr+b3ABeBduRvfBtZxtIHCmfC/Q9qJXH+7mYWYGLD/gs9Xsl3fgyhUyHUzf1rrTBASH6tBbpAWHLXM1IdvPm+DtTB7kPsSy3TPx05OKzgiY4X7M7YbIp/9SBrF21Qe8xV9Pk1xLgrDCjNL7KqmKUDIEWpmY6HLRe7hOwvxoD1l1gAD+8sICPX6JdLbDKKj/9n/E2FZSLz9whlVZTHjbshHGelbhVc2b7Y3Skai5N/zuRmkZvrHKUOWF976zC/vgV6NT25CHb/oyOgpEU5tZFGmwKWB9/kcV93nst6KTNRSBCZi1KiBQIew5uRAQE5dP8x8lnSY7DhiQ5nygX+TJg+ZRVjU4XziTAy5tYY66f5yKcMRuhZ2/ZMe/MoCCTJ8OmCqGGxMsWnDBuTTc0y4aNGonw70BYds0cXMApu+lmp6LSbTfiZwSwkDab32DTPSM0fjab0B+1rLav7M4/Etuy+0BVXnWJ0YJLE+b0MKSLqCrx7Wj5X4vkB0+GY/vYT/KCCZ/qb2oF5cqwXzk7Dv9kK5AC06r8/dfcA/1pp9wcV6720tlXAD2yBmaeshtiW3AXHZ6ouFyH15HQym11awHEw1cZObCiAEAQt1dr7gCKUY8xxAz/Bpw1v+FQhnXqOCTFgS/bLVdiT72fEsuRLfiIIt9sIfnU3ftxO0qmr/lQSmsW5fJLBKiVwsIgyzT3h/SvK1QYY+pT4ZoqmPGbls6hDCy0N1/nnaT/belLVzGvn8mgdwUo19GE3VlhSCcswI8a3eA2FYqZ5FwAAEsBAAAAA=="></div>
+        <div class="meta">
+          <div class="title">Сковородка тефлонова<br>з кришкою</div>
+          <div class="rate">★ 3.5</div>
+        </div>
+        <div class="price">2400 грн</div>
+      </article>
+    </div>
+  </section>
+
+  <div class="block" aria-label="Банер">
+    <div class="banner">
+      <img src="283974BA-A1AD-4BDE-B457-B9606FD43530_4_5005_c 1.png" alt="Банер">
+      <div class="bannerBar">
+        <div class="bannerLeft">Товар можна подивитись в режимі ONLINE</div>
+        <div class="bannerMid">Сковородка чавунна з кришкою<span class="bannerSub">Італія</span></div>
+        <div class="bannerArrow">›</div>
+      </div>
+    </div>
+  </div>
+
+
+  <section id="popular">
+    <div class="h"><b>Лідер продаж</b><a class="more" href="more.html">Всього →</a></div>
+    <div class="row" aria-label="Лідер продаж">
+      <article class="card" data-cat="pans">
+        <div class="ph"></div>
+        <div class="meta">
+          <div class="title">Сковородка тефлонова<br>з кришкою</div>
+          <div class="rate">★ 3.5</div>
+        </div>
+        <div class="price">2400 грн</div>
+      </article>
+      <article class="card" data-cat="pans">
+        <div class="ph"></div>
+        <div class="meta">
+          <div class="title">Сковородка тефлонова<br>з кришкою</div>
+          <div class="rate">★ 3.5</div>
+        </div>
+        <div class="price">2400 грн</div>
+      </article>
+      <article class="card" data-cat="pans">
+        <div class="ph"></div>
+        <div class="meta">
+          <div class="title">Сковородка тефлонова<br>з кришкою</div>
+          <div class="rate">★ 3.5</div>
+        </div>
+        <div class="price">2400 грн</div>
+      </article>
+    </div>
+  </section>
+
+  <div class="center"><a class="cta" href="more.html">Показати ще</a></div>
+
+  <footer class="foot">
+    <div>© Каталог</div>
+    <div><a href="#help">Контакти</a> · <a href="#policy">Політика</a></div>
+  </footer>
+</main>
+
+<script>
+  // --- Категорії (бургер-меню) ---
+  //---апр---
+  const catBtn = document.getElementById('catBtn');
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  const closeDrawer = document.getElementById('closeDrawer');
+  const catButtons = Array.from(document.querySelectorAll('.catList .cat'));
+
+  function openDrawer(){
+    drawer.classList.add('on');
+    overlay.classList.add('on');
+    drawer.setAttribute('aria-hidden','false');
+    overlay.setAttribute('aria-hidden','false');
+  }
+  function hideDrawer(){
+    drawer.classList.remove('on');
+    overlay.classList.remove('on');
+    drawer.setAttribute('aria-hidden','true');
+    overlay.setAttribute('aria-hidden','true');
+  }
+  catBtn?.addEventListener('click', openDrawer);
+  closeDrawer?.addEventListener('click', hideDrawer);
+  overlay?.addEventListener('click', hideDrawer);
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') hideDrawer(); });
+
+  // --- Пошук + фільтр категорій ---
+  const searchInput = document.getElementById('searchInput');
+  const cards = Array.from(document.querySelectorAll('article.card'));
+  let activeCat = 'all';
+
+  function normalize(s){
+    return (s || '')
+      .toLowerCase()
+      .replace(/\s+/g,' ')
+      .trim();
+  }
+
+  function getCardText(card){
+    // беремо текст з заголовка (без <br>) + можна додати інші поля за потреби
+    const title = card.querySelector('.title')?.innerText || '';
+    const price = card.querySelector('.price')?.innerText || '';
+    return normalize(title + ' ' + price);
+  }
+
+  function applyFilters(){
+    const q = normalize(searchInput?.value);
+
+    cards.forEach(card => {
+      const cat = card.dataset.cat || 'all';
+      const matchesCat = (activeCat === 'all') || (cat === activeCat);
+      const matchesText = !q || getCardText(card).includes(q);
+      card.style.display = (matchesCat && matchesText) ? '' : 'none';
+    });
+  }
+
+  catButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      catButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCat = btn.dataset.cat || 'all';
+      applyFilters();
+      hideDrawer();
+    });
+  });
+
+  searchInput?.addEventListener('input', applyFilters);
+  applyFilters();
+  //--що
+</script>
+</html>
