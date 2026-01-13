@@ -139,17 +139,17 @@ body{
 /* Горизонтальна стрічка товарів (свайп ліво/право) */
 .row{
   display:flex;
-  gap:8px;
+  gap:10px;
   overflow-x:auto;
-  padding-bottom:6px;
+  padding:10px 2px 14px;
   scroll-snap-type:x mandatory;
+  scroll-padding-left:2px;
   -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;           /* Firefox */
 }
-.row::-webkit-scrollbar{height:6px}
-.row::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:999px}
-.row::-webkit-scrollbar-track{background:transparent}
+.row::-webkit-scrollbar{height:0} /* Chrome/Safari */
 .row .card{
-  flex:0 0 112px;          /* щоб було що листати */
+  flex:0 0 140px;          /* як у Play Market */
   scroll-snap-align:start;
 }
 
@@ -159,7 +159,7 @@ body{
   padding:6px
 }
 .ph{
-  height:72px;            /* ⬅️ менша висота картки */
+  height:92px;            /* ⬅️ менша висота картки */
   border-radius:12px;
   background:#f3f4f6
 }
@@ -353,15 +353,7 @@ body{
         <div class="price">2050 грн</div>
       </article>
     </div>
-<div class="meta">
-          <div class="title">Сковородка тефлонова<br>з кришкою</div>
-          <div class="rate">★ 3.5</div>
-        </div>
-        <div class="price">2400 грн</div>
-      </article>
-
-     
-  </section>
+</section>
 
   <div class="block" aria-label="Банер">
     <div class="banner">
@@ -373,7 +365,7 @@ body{
       </div>
     </div>
   </div>
-аррп
+
 
   <section id="popular">
     <div class="h"><b>Лідер продаж</b><a class="more" href="more.html">Всього →</a></div>
