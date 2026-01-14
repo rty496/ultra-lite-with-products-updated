@@ -82,7 +82,7 @@ body{
 
 /* Top cards */
 .topCard{flex:0 0 130px}
-.topImg{height:92px;border-radius:12px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #e5e7eb}
+.topImg{height:112px;border-radius:12px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #e5e7eb}
 .topImg img{width:100%;height:100%;object-fit:contain;display:block}
 .topMeta{display:flex;justify-content:space-between;gap:8px;margin-top:8px}
 .topTitle{font-size:14px;line-height:1.15}
@@ -131,7 +131,12 @@ body{
 .miniTitle{font-size:13px;line-height:1.1;max-height:2.2em;overflow:hidden}
 .miniMeta{display:flex;gap:10px;align-items:baseline;margin-top:4px}
 .miniMeta .rate{font-weight:700}
-.miniMeta .price{margin:0;color:var(--g)}
+.miniMeta .price{
+  margin:0;
+  color:var(--g);
+  white-space: nowrap;   /* ⬅️ ГОЛОВНЕ */
+}
+
 
 /* Show more */
 .moreBtnWrap{display:flex;justify-content:center;margin:10px 0 0}
